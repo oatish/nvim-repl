@@ -9,6 +9,7 @@
 
 let s:id_window = v:false
 let s:id_job = v:false
+let g:code_block_identifier = get(g:, 'repl_code_block_separator', "^\\s*#\\s*%%.*")
 
 function! repl#warning(msg)
   echohl WarningMsg
@@ -144,7 +145,7 @@ function! repl#sendblock(firstline_num, lastline_num, mode)
         \ : getbufline(bufnr('%'), a:firstline_num, a:lastline_num)
   let buflines_chansend = []
   for line in buflines_raw
-    if line != "" && line !~ "^\\s*#\\s*%%.*"
+    if line != "" && line !~ g:repl_code_block_separator
       let buflines_chansend += [line] " remove the empty line and #%% line
     endif
   endfor
@@ -165,7 +166,7 @@ function! repl#sendcell(...)
   let l:find_begin_line = 0
   while l:cur_line_num > 0 && !l:find_begin_line
     let l:cur_line = getline(l:cur_line_num)
-    if l:cur_line =~ "^\\s*#\\s*%%.*"
+    if l:cur_line =~ g:repl_code_block_separator
       let l:cell_begin_line_num = l:cur_line_num
       let l:find_begin_line = 1
     endif
@@ -178,7 +179,7 @@ function! repl#sendcell(...)
   let l:find_end_line = 0
   while l:cur_line_num <= line('$') && !l:find_end_line
     let l:cur_line = getline(l:cur_line_num)
-    if l:cur_line =~ "^\\s*#\\s*%%.*"
+    if l:cur_line =~ g:repl_code_block_separator
       let l:cell_end_line_num = l:cur_line_num - 1
       let l:find_end_line = 1
     endif
